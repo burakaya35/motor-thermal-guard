@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
     }
 
     MotorProtection monitor;
-    std::cout << "Motor thermal protection simulation\n";
+    std::cout << "Motor Thermal Guard - Version 2\n";
     std::cout << "Trip: " << kTripTemperatureC << " C, reset: " << kResetTemperatureC << " C\n";
 
     for (const double temperature : temperatures) {
