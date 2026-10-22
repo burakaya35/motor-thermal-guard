@@ -1,0 +1,63 @@
+name: C++ Motor Guard CI-CD
+
+# "on", "push", "pull_request" GitHub Actions anahtar kelimeleridir.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: Build and test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+    steps:
+      - name: Get source code
+        uses: actions/checkout@v7
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Compile
+        run: cmake --build build --config Release --parallel 2
+
+      - name: Run C++ tests
+        run: ctest --test-dir build -C Release --output-on-failure
+
+  cd:
+    name: Package (${{ matrix.os }})
+    needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            artifact_name: motor-monitor-linux
+            executable_path: build/motor_monitor
+          - os: windows-2025
+            artifact_name: motor-monitor-windows
+            executable_path: build/Release/motor_monitor.exe
+    steps:
+      - name: Get source code
+        uses: actions/checkout@v7
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Compile release program
+        run: cmake --build build --config Release --parallel 2
+
+      - name: Upload compiled program
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.executable_path }}
+          if-no-files-found: error

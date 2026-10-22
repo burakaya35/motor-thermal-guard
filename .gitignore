@@ -1,0 +1,23 @@
+# Olusturulan derleme dosyalari (GitHub'a yuklenmez)
+build/
+build-*/
+out/
+CMakeFiles/
+CMakeCache.txt
+Testing/
+*.obj
+*.o
+*.exe
+*.pdb
+*.ilk
+*.a
+*.lib
+*.so
+*.dylib
+
+# Editor / sistem
+.vs/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
